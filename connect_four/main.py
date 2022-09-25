@@ -99,7 +99,7 @@ class ConnectFour(Widget):
                 self.cur_player].point_score
         
         # Redraw that column with the new values
-        col_obj.redraw(self.board[col_no],self.counter_cols)
+        # col_obj.redraw(self.board[col_no],self.counter_cols)
         
         if self.check_win():
             self.game_end_popup("{} won".format(self.players[self.cur_player].name))
@@ -116,7 +116,48 @@ class ConnectFour(Widget):
 
 
         # Change the current player
-        self.cur_player = int(not self.cur_player)
+        # self.cur_player = int(not self.cur_player)
+    
+    def AI_make_move(self, col_obj):
+        """
+        AI makes a move on the board. Takes a
+        reference to the column as parameters
+        """
+        self.cur_player = 1
+        
+        if self.players == []:
+            # Players haven't been initialised
+            return False
+
+        # AI chooses which column
+        col_no = 0
+        space_index = get_first_available(self.board[col_no])
+        if space_index == False and isinstance(space_index,bool):
+            # Column is full up
+            return False
+        
+        # Set the board element
+        self.board[col_no][space_index] = self.players[
+                self.cur_player].point_score
+
+        # Redraw that column with the new values
+        col_obj.redraw(self.board[col_no],self.counter_cols)
+
+        if self.check_win():
+            self.game_end_popup("The computer won")
+            return True
+        else:
+            # Check for draw
+            self.draw = True
+            for col in self.board:
+                if 0 in col:
+                    self.draw = False
+
+            if self.draw:
+               self.game_end_popup("Draw")
+        
+        self.cur_player = 0
+        
 
     def make_hover(self, col_no, col_obj):
         """
@@ -126,6 +167,11 @@ class ConnectFour(Widget):
         if self.players == []:
             # Players haven't been initialised
             return False
+
+        if self.cur_player == 1:
+            # AI's turn
+            return False
+
         # Copy the game board so the hovered state doesn't affect the win checking
         temp_col = copy.copy(self.board[col_no])
         index = get_first_available(temp_col)
@@ -216,7 +262,7 @@ class ConnectFour(Widget):
         """
         # Create Players
         self.players = [Player(self.player_1_name.text, rgb_max_1((221, 63, 63)), rgb_max_1((221,141,141)), 1),
-                        Player(self.player_2_name.text, rgb_max_1((222, 226, 55)), rgb_max_1((224,226,136)), -1)]
+                        Player("Artificial Intelligence", rgb_max_1((222, 226, 55)), rgb_max_1((224,226,136)), -1)]
         self.counter_cols = {"1": self.players[0].col, "-1": self.players[1].col,
                              "2": self.players[0].hover_col, "-2": self.players[1].hover_col}
         # Disable text inputs and start game button
@@ -296,6 +342,8 @@ class Column(Widget):
     def on_touch_down(self, touch):
         if self.collide_point(touch.x,touch.y) and touch.button == "left":
             self.get_game().make_move(self.col_no,self)
+            # AI makes move
+            self.get_game().AI_make_move(self)
 
     def on_mouse_pos(self, *args):
         pos = args[1]
