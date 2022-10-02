@@ -71,7 +71,6 @@ class GameBoard(Widget):
 
 class ConnectFour(Widget):
     board = ListProperty([[0]*6 for _ in range(7)])
-    columns = ListProperty(None)
     cur_player = NumericProperty(0)
     players = ListProperty([])
     player_1_name = ObjectProperty(None)
@@ -99,7 +98,7 @@ class ConnectFour(Widget):
                 self.cur_player].point_score
         
         # Redraw that column with the new values
-        # col_obj.redraw(self.board[col_no],self.counter_cols)
+        col_obj.redraw(self.board[col_no],self.counter_cols)
         
         if self.check_win():
             self.game_end_popup("{} won".format(self.players[self.cur_player].name))
@@ -118,7 +117,7 @@ class ConnectFour(Widget):
         # Change the current player
         # self.cur_player = int(not self.cur_player)
     
-    def AI_make_move(self, col_obj):
+    def AI_make_move(self):
         """
         AI makes a move on the board. Takes a
         reference to the column as parameters
@@ -141,7 +140,8 @@ class ConnectFour(Widget):
                 self.cur_player].point_score
 
         # Redraw that column with the new values
-        col_obj.redraw(self.board[col_no],self.counter_cols)
+
+        self.game_board.columns[col_no].redraw(self.board[col_no],self.counter_cols)
 
         if self.check_win():
             self.game_end_popup("The computer won")
@@ -343,7 +343,7 @@ class Column(Widget):
         if self.collide_point(touch.x,touch.y) and touch.button == "left":
             self.get_game().make_move(self.col_no,self)
             # AI makes move
-            self.get_game().AI_make_move(self)
+            self.get_game().AI_make_move()
 
     def on_mouse_pos(self, *args):
         pos = args[1]
