@@ -12,7 +12,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.popup import Popup
 from kivy.graphics import *
 from kivy.properties import NumericProperty,ListProperty,ObjectProperty
-
+import connect_four.agent as agent
 
 def get_first_available(col):
     """
@@ -129,7 +129,8 @@ class ConnectFour(Widget):
             return False
 
         # AI chooses which column
-        col_no = 0
+        col_no = agent.get_move(self.board)
+
         space_index = get_first_available(self.board[col_no])
         if space_index == False and isinstance(space_index,bool):
             # Column is full up
