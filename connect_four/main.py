@@ -74,7 +74,6 @@ class ConnectFour(Widget):
     cur_player = NumericProperty(0)
     players = ListProperty([])
     player_1_name = ObjectProperty(None)
-    player_2_name = ObjectProperty(None)
     games_won_label = ObjectProperty(None)
     start_game_btn = ObjectProperty(None)
     game_board = ObjectProperty(None)
@@ -116,6 +115,7 @@ class ConnectFour(Widget):
 
         # Change the current player
         # self.cur_player = int(not self.cur_player)
+        return False
     
     def AI_make_move(self):
         """
@@ -129,8 +129,8 @@ class ConnectFour(Widget):
             return False
 
         # AI chooses which column
-        # col_no = agent.get_move_1step(self.board)
-        col_no = agent.get_move_3step(self.board)
+        col_no = agent.get_move_1step(self.board)
+        #col_no = agent.get_move_3step(self.board)
 
         space_index = get_first_available(self.board[col_no])
         if space_index == False and isinstance(space_index,bool):
@@ -159,7 +159,7 @@ class ConnectFour(Widget):
                self.game_end_popup("Draw")
         
         self.cur_player = 0
-        
+        return False        
 
     def make_hover(self, col_no, col_obj):
         """
@@ -253,7 +253,6 @@ class ConnectFour(Widget):
         # Re-enable and clear text inputs
         self.set_inputs_state(False)
         self.player_1_name.text = ""
-        self.player_2_name.text = ""
         self.games_won_label.text = "0 v 0"
         self.players = []
         self.cur_player = 0
@@ -264,7 +263,7 @@ class ConnectFour(Widget):
         """
         # Create Players
         self.players = [Player(self.player_1_name.text, rgb_max_1((221, 63, 63)), rgb_max_1((221,141,141)), 1),
-                        Player("Artificial Intelligence", rgb_max_1((222, 226, 55)), rgb_max_1((224,226,136)), -1)]
+                        Player("Artificial Intelligence", rgb_max_1((50, 205, 50)), rgb_max_1((141,40,221)), -1)]
         self.counter_cols = {"1": self.players[0].col, "-1": self.players[1].col,
                              "2": self.players[0].hover_col, "-2": self.players[1].hover_col}
         # Disable text inputs and start game button
@@ -276,7 +275,6 @@ class ConnectFour(Widget):
         and start game button
         """
         self.player_1_name.disabled = state
-        self.player_2_name.disabled = state
         self.start_game_btn = state
 
     def check_win(self):
@@ -343,9 +341,9 @@ class Column(Widget):
 
     def on_touch_down(self, touch):
         if self.collide_point(touch.x,touch.y) and touch.button == "left":
-            self.get_game().make_move(self.col_no,self)
-            # AI makes move
-            self.get_game().AI_make_move()
+            if not self.get_game().make_move(self.col_no,self):
+                # AI makes move
+                self.get_game().AI_make_move()
 
     def on_mouse_pos(self, *args):
         pos = args[1]
