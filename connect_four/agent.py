@@ -1,4 +1,5 @@
 import numpy as np
+from .reinlearn import agent_rl
 
 def my_agent_1step(obs, config):
     valid_moves = [col for col in range(config.columns) if obs.board[col] == 0]
@@ -168,6 +169,21 @@ def get_move_3step(game_board):
     config = Config(7, 6, 4)
 
     return my_agent_3step(obs, config)
+
+def get_move_rl(game_board):
+
+    board = []
+    for i in range(6):
+        for j in range(7):
+            if game_board[j][5 - i] == -1:
+                board.append(2)
+            else:
+                board.append(game_board[j][5 - i])
+
+    obs = Obs(2, board)
+    config = Config(7, 6, 4)
+
+    return agent_rl(obs, config)
 
 class Config:
 

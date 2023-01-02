@@ -129,8 +129,9 @@ class ConnectFour(Widget):
             return False
 
         # AI chooses which column
-        col_no = agent.get_move_1step(self.board)
+        #col_no = agent.get_move_1step(self.board)
         #col_no = agent.get_move_3step(self.board)
+        col_no = agent.get_move_rl(self.board)
 
         space_index = get_first_available(self.board[col_no])
         if space_index == False and isinstance(space_index,bool):
